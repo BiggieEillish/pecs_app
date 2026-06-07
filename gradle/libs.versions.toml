@@ -1,0 +1,46 @@
+# Version catalog — single source of truth for dependency versions.
+# Versions pinned to the toolchain proven on this machine (Android Studio 252 / AGP 8.12,
+# Gradle 8.14.3 both cached). Bump `agp` to 9.x after updating Android Studio. See docs/architecture.md.
+[versions]
+# Coherent late-2025 stack pinned to the toolchain proven on this machine (Studio 252 / AGP 8.12).
+# Rationale: Hilt 2.58+ require AGP 9; Hilt 2.57.2's metadata reader maxes at Kotlin 2.2 metadata.
+# So AGP 8.12 + Hilt 2.57.2 + Kotlin 2.2.x + a matching late-2025 Compose BOM is the consistent set.
+# Bump the whole block to the 2026/AGP-9 generation after updating Android Studio. See docs/architecture.md.
+agp = "8.12.0"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.5"
+hilt = "2.57.2"
+composeBom = "2025.12.01"
+activityCompose = "1.11.0"
+lifecycle = "2.9.4"
+# Testing
+junit = "4.13.2"
+truth = "1.4.5"
+
+[libraries]
+# Compose (versions come from the BOM)
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+# Hilt (DI)
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+
+# Unit testing
+junit = { module = "junit:junit", version.ref = "junit" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
