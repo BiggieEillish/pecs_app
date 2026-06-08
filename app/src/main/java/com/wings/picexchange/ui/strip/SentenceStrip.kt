@@ -1,5 +1,6 @@
 package com.wings.picexchange.ui.strip
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,11 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,10 +34,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.wings.picexchange.ui.components.ImageRefImage
 
-/** Persistent bottom strip where tapped cards are assembled into a sentence (in order). */
+/**
+ * Persistent bottom strip. Tapped cards are assembled here in order; the chip currently being
+ * spoken is highlighted. "Speak" reads the sentence aloud (toggles to "Stop" while speaking),
+ * "Clear" empties the strip.
+ */
 @Composable
 fun SentenceStrip(
     items: List<StripItem>,
+    speakingId: String?,
+    isSpeaking: Boolean,
+    canSpeak: Boolean,
+    onSpeak: () -> Unit,
+    onStop: () -> Unit,
     onRemove: (String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
@@ -46,7 +60,7 @@ fun SentenceStrip(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .height(96.dp)
+                .height(116.dp)
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -68,22 +82,59 @@ fun SentenceStrip(
                         contentPadding = PaddingValues(horizontal = 4.dp),
                     ) {
                         items(items, key = { it.instanceId }) { item ->
-                            StripChip(item = item, onRemove = { onRemove(item.instanceId) })
+                            StripChip(
+                                item = item,
+                                isSpeaking = item.instanceId == speakingId,
+                                onRemove = { onRemove(item.instanceId) },
+                            )
                         }
                     }
                 }
             }
-            TextButton(onClick = onClear, enabled = items.isNotEmpty()) {
-                Text("Clear")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { if (isSpeaking) onStop() else onSpeak() },
+                    enabled = items.isNotEmpty() && (canSpeak || isSpeaking),
+                    modifier = Modifier.width(104.dp),
+                ) {
+                    Text(if (isSpeaking) "Stop" else "Speak")
+                }
+                TextButton(
+                    onClick = onClear,
+                    enabled = items.isNotEmpty(),
+                    modifier = Modifier.width(104.dp),
+                ) {
+                    Text("Clear")
+                }
             }
         }
     }
 }
 
 @Composable
-private fun StripChip(item: StripItem, onRemove: () -> Unit) {
+private fun StripChip(
+    item: StripItem,
+    isSpeaking: Boolean,
+    onRemove: () -> Unit,
+) {
+    val shape = RoundedCornerShape(12.dp)
     Box {
-        Card(modifier = Modifier.size(72.dp)) {
+        Card(
+            modifier = Modifier
+                .size(72.dp)
+                .then(
+                    if (isSpeaking) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape)
+                    else Modifier,
+                ),
+            shape = shape,
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSpeaking) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+            ),
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
