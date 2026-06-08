@@ -75,7 +75,22 @@ fun PicExchangeRoot() {
                         canSpeak = ttsStatus is TtsStatus.Ready,
                         onSpeak = stripViewModel::speak,
                         onStop = stripViewModel::stopSpeaking,
-                        onRemove = stripViewModel::remove,
+                        onRemove = { instanceId ->
+                            val index = items.indexOfFirst { it.instanceId == instanceId }
+                            val removed = items.getOrNull(index)
+                            stripViewModel.remove(instanceId)
+                            if (removed != null) {
+                                scope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Removed “${removed.label}”",
+                                        actionLabel = "Undo",
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
+                                        stripViewModel.insertAt(index, removed)
+                                    }
+                                }
+                            }
+                        },
                         onClear = {
                             val previous = stripViewModel.clear()
                             scope.launch {

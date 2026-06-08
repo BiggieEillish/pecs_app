@@ -51,6 +51,13 @@ class StripViewModel @Inject constructor(
         savedStateHandle[KEY_ITEMS] = ArrayList(previous)
     }
 
+    /** Re-inserts an item at [index] (used to undo a single removal). */
+    fun insertAt(index: Int, item: StripItem) {
+        val current = items.value.toMutableList()
+        current.add(index.coerceIn(0, current.size), item)
+        savedStateHandle[KEY_ITEMS] = ArrayList(current)
+    }
+
     /** Speaks the current strip aloud, in order. */
     fun speak() {
         speaker.speak(items.value.map { SpeechItem(id = it.instanceId, text = it.label) })

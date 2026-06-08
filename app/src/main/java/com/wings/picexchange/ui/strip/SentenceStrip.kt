@@ -125,7 +125,8 @@ private fun StripChip(
                 .then(
                     if (isSpeaking) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape)
                     else Modifier,
-                ),
+                )
+                .clickable(onClickLabel = "Remove ${item.label}", onClick = onRemove),
             shape = shape,
             colors = CardDefaults.cardColors(
                 containerColor = if (isSpeaking) {
@@ -155,13 +156,13 @@ private fun StripChip(
                 )
             }
         }
+        // Visual hint that tapping the chip removes it (the whole chip is the touch target).
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.errorContainer,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .size(22.dp)
-                .clickable(onClick = onRemove),
+                .size(22.dp),
         ) {
             Text(
                 text = "×",

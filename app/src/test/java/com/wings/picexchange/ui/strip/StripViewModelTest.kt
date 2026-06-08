@@ -91,4 +91,18 @@ class StripViewModelTest {
         vm.stopSpeaking()
         assertThat(speaker.stopCount).isEqualTo(1)
     }
+
+    @Test
+    fun insertAtUndoesARemovalAtTheSameposition() {
+        val vm = viewModel()
+        vm.add(card(1, "I want", CardType.SENTENCE_STARTER))
+        vm.add(card(2, "drink"))
+        vm.add(card(3, "now"))
+        val middle = vm.items.value[1]
+        vm.remove(middle.instanceId)
+        assertThat(vm.items.value.map { it.label }).containsExactly("I want", "now").inOrder()
+
+        vm.insertAt(1, middle)
+        assertThat(vm.items.value.map { it.label }).containsExactly("I want", "drink", "now").inOrder()
+    }
 }
