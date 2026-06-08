@@ -42,12 +42,14 @@ fun CategoryTile(
 fun CardTile(
     label: String,
     imageRef: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 140.dp),
+            .heightIn(min = 140.dp)
+            .clickable(onClick = onClick),
     ) {
         TileContent(label = label, imageRef = imageRef, imageSize = 64)
     }

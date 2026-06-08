@@ -3,6 +3,7 @@ package com.wings.picexchange.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -31,7 +32,10 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(topBar = { TopAppBar(title = { Text("PicExchange") }) }) { padding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = { TopAppBar(title = { Text("PicExchange") }) },
+    ) { padding ->
         when (val s = state) {
             HomeUiState.Loading -> Centered(padding) { CircularProgressIndicator() }
             HomeUiState.Empty -> Centered(padding) {

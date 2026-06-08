@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
-import com.wings.picexchange.ui.navigation.PicExchangeNavHost
+import com.wings.picexchange.ui.PicExchangeRoot
 import com.wings.picexchange.ui.theme.PicExchangeTheme
 
 /** The single Activity that hosts all Compose UI (single-Activity architecture). */
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PicExchangeTheme {
-                PicExchangeNavHost()
+                PicExchangeRoot()
             }
         }
     }

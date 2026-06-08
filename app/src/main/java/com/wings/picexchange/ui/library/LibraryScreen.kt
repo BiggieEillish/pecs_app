@@ -3,6 +3,7 @@ package com.wings.picexchange.ui.library
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,11 +33,13 @@ import com.wings.picexchange.ui.components.CardTile
 @Composable
 fun LibraryScreen(
     onBack: () -> Unit,
+    onCardClick: (CardEntity) -> Unit,
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val title = (state as? LibraryUiState.Content)?.categoryName.orEmpty()
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 title = { Text(title) },
@@ -56,14 +59,18 @@ fun LibraryScreen(
                         Text("No cards yet", style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
-                    CardGrid(s.cards, padding)
+                    CardGrid(s.cards, padding, onCardClick)
                 }
         }
     }
 }
 
 @Composable
-private fun CardGrid(cards: List<CardEntity>, padding: PaddingValues) {
+private fun CardGrid(
+    cards: List<CardEntity>,
+    padding: PaddingValues,
+    onCardClick: (CardEntity) -> Unit,
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 140.dp),
         modifier = Modifier
@@ -74,7 +81,11 @@ private fun CardGrid(cards: List<CardEntity>, padding: PaddingValues) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(cards, key = { it.id }) { card ->
-            CardTile(label = card.label, imageRef = card.imageRef)
+            CardTile(
+                label = card.label,
+                imageRef = card.imageRef,
+                onClick = { onCardClick(card) },
+            )
         }
     }
 }
