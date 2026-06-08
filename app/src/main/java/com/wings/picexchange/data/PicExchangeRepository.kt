@@ -28,9 +28,19 @@ class PicExchangeRepository @Inject constructor(
 
     suspend fun deleteCategory(category: CategoryEntity) = categoryDao.delete(category)
 
+    suspend fun getCard(id: Long): CardEntity? = cardDao.getById(id)
+
+    suspend fun cardsIn(categoryId: Long): List<CardEntity> = cardDao.getByCategory(categoryId)
+
+    suspend fun nextCardPosition(categoryId: Long): Int = cardDao.maxPosition(categoryId) + 1
+
     suspend fun addCard(card: CardEntity): Long = cardDao.insert(card)
 
     suspend fun updateCard(card: CardEntity) = cardDao.update(card)
 
     suspend fun deleteCard(card: CardEntity) = cardDao.delete(card)
+
+    suspend fun updateCategory(category: CategoryEntity) = categoryDao.update(category)
+
+    suspend fun nextCategoryPosition(): Int = categoryDao.maxPosition() + 1
 }

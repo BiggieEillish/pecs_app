@@ -21,6 +21,9 @@ interface CategoryDao {
     @Query("SELECT COUNT(*) FROM categories")
     suspend fun count(): Int
 
+    @Query("SELECT COALESCE(MAX(position), -1) FROM categories")
+    suspend fun maxPosition(): Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(category: CategoryEntity): Long
 

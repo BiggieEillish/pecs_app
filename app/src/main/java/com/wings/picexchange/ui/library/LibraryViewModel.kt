@@ -4,18 +4,22 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wings.picexchange.data.PicExchangeRepository
+import com.wings.picexchange.data.image.ImageStore
+import com.wings.picexchange.data.local.entity.CardEntity
 import com.wings.picexchange.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: PicExchangeRepository,
+    private val imageStore: ImageStore,
 ) : ViewModel() {
 
     private val categoryId: Long = checkNotNull(savedStateHandle[Routes.ARG_CATEGORY_ID]) {
@@ -30,4 +34,11 @@ class LibraryViewModel @Inject constructor(
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LibraryUiState.Loading)
+
+    fun deleteCard(card: CardEntity) {
+        viewModelScope.launch {
+            imageStore.deleteIfLocal(card.imageRef)
+            repository.deleteCard(card)
+        }
+    }
 }

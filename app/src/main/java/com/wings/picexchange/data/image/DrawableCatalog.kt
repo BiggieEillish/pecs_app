@@ -20,6 +20,7 @@ object DrawableCatalog {
         "category_food" to R.drawable.ic_seed_category,
         "category_play" to R.drawable.ic_seed_category,
         "category_feelings" to R.drawable.ic_seed_category,
+        "category_custom" to R.drawable.ic_seed_category, // default icon for user-created categories
         // Sentence starters
         "starter_want" to R.drawable.ic_seed_starter,
         "starter_see" to R.drawable.ic_seed_starter,

@@ -1,6 +1,7 @@
 package com.wings.picexchange.ui.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,37 +20,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/** A tappable category tile for the Home grid. */
+/** A category tile for the Home grid. Tap opens the library; long-press manages (edit/delete). */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryTile(
     name: String,
     imageRef: String,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 150.dp)
-            .clickable(onClick = onClick),
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         TileContent(label = name, imageRef = imageRef, imageSize = 72)
     }
 }
 
-/** A read-only picture / sentence-starter card for the Library grid (tap-to-add arrives in M3). */
+/** A picture / sentence-starter card. Tap adds it to the strip; long-press manages (edit/delete). */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CardTile(
     label: String,
     imageRef: String,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 140.dp)
-            .clickable(onClick = onClick),
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         TileContent(label = label, imageRef = imageRef, imageSize = 64)
     }

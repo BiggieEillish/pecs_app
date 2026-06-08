@@ -24,6 +24,12 @@ interface CardDao {
     @Query("SELECT COUNT(*) FROM cards WHERE categoryId = :categoryId")
     suspend fun countInCategory(categoryId: Long): Int
 
+    @Query("SELECT * FROM cards WHERE categoryId = :categoryId ORDER BY position ASC, id ASC")
+    suspend fun getByCategory(categoryId: Long): List<CardEntity>
+
+    @Query("SELECT COALESCE(MAX(position), -1) FROM cards WHERE categoryId = :categoryId")
+    suspend fun maxPosition(categoryId: Long): Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(card: CardEntity): Long
 
