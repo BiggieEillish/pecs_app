@@ -15,6 +15,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wings.picexchange.data.local.entity.CategoryEntity
+import com.wings.picexchange.data.settings.AppMode
+import com.wings.picexchange.ui.LocalAppMode
 import com.wings.picexchange.ui.components.CategoryTile
 import com.wings.picexchange.ui.components.ConfirmDeleteDialog
 import com.wings.picexchange.ui.components.ManageItemDialog
@@ -37,31 +40,48 @@ fun HomeScreen(
     onCategoryClick: (Long) -> Unit,
     onAddCategory: () -> Unit,
     onEditCategory: (Long) -> Unit,
+    onToggleMode: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isTeacher = LocalAppMode.current == AppMode.TEACHER
     var managed by remember { mutableStateOf<CategoryEntity?>(null) }
     var confirmDelete by remember { mutableStateOf<CategoryEntity?>(null) }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = { TopAppBar(title = { Text("PicExchange") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("PicExchange") },
+                actions = {
+                    TextButton(onClick = onToggleMode) {
+                        Text(if (isTeacher) "Lock" else "Teacher")
+                    }
+                },
+            )
+        },
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = onAddCategory) { Text("Add category") }
+            if (isTeacher) {
+                ExtendedFloatingActionButton(onClick = onAddCategory) { Text("Add category") }
+            }
         },
     ) { padding ->
         when (val s = state) {
             HomeUiState.Loading -> Centered(padding) { CircularProgressIndicator() }
             HomeUiState.Empty -> Centered(padding) {
                 Text(
-                    "No categories yet.\nTap “Add category” to begin.",
+                    text = if (isTeacher) {
+                        "No categories yet.\nTap “Add category” to begin."
+                    } else {
+                        "No categories yet."
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
             is HomeUiState.Content -> CategoryGrid(
                 categories = s.categories,
                 onCategoryClick = onCategoryClick,
-                onCategoryLongClick = { managed = it },
+                onCategoryLongClick = { if (isTeacher) managed = it },
                 padding = padding,
             )
         }

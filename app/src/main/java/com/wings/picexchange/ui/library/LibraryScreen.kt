@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wings.picexchange.data.local.entity.CardEntity
+import com.wings.picexchange.data.settings.AppMode
+import com.wings.picexchange.ui.LocalAppMode
 import com.wings.picexchange.ui.components.CardTile
 import com.wings.picexchange.ui.components.ConfirmDeleteDialog
 import com.wings.picexchange.ui.components.ManageItemDialog
@@ -45,6 +47,7 @@ fun LibraryScreen(
     viewModel: LibraryViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isTeacher = LocalAppMode.current == AppMode.TEACHER
     val title = (state as? LibraryUiState.Content)?.categoryName.orEmpty()
     var managed by remember { mutableStateOf<CardEntity?>(null) }
     var confirmDelete by remember { mutableStateOf<CardEntity?>(null) }
@@ -62,7 +65,9 @@ fun LibraryScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = onAddCard) { Text("Add card") }
+            if (isTeacher) {
+                ExtendedFloatingActionButton(onClick = onAddCard) { Text("Add card") }
+            }
         },
     ) { padding ->
         when (val s = state) {
@@ -71,7 +76,7 @@ fun LibraryScreen(
                 if (s.cards.isEmpty()) {
                     Centered(padding) {
                         Text(
-                            "No cards yet.\nTap “Add card” to add one.",
+                            text = if (isTeacher) "No cards yet.\nTap “Add card” to add one." else "No cards yet.",
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }
@@ -79,7 +84,7 @@ fun LibraryScreen(
                     CardGrid(
                         cards = s.cards,
                         onCardClick = onCardClick,
-                        onCardLongClick = { managed = it },
+                        onCardLongClick = { if (isTeacher) managed = it },
                         padding = padding,
                     )
                 }

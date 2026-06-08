@@ -77,6 +77,9 @@ dependencies {
     // Image loading
     implementation(libs.coil.compose)
 
+    // Preferences (parental lock)
+    implementation(libs.androidx.datastore.preferences)
+
     // Dependency injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

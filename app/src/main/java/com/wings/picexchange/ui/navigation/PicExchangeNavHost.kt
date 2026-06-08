@@ -17,6 +17,7 @@ import com.wings.picexchange.ui.library.LibraryScreen
 @Composable
 fun PicExchangeNavHost(
     onCardClick: (CardEntity) -> Unit,
+    onToggleMode: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -26,6 +27,7 @@ fun PicExchangeNavHost(
                 onCategoryClick = { id -> navController.navigate(Routes.library(id)) },
                 onAddCategory = { navController.navigate(Routes.categoryEditor()) },
                 onEditCategory = { id -> navController.navigate(Routes.categoryEditor(id)) },
+                onToggleMode = onToggleMode,
             )
         }
         composable(
