@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,7 +55,10 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("PicExchange") },
                 actions = {
-                    TextButton(onClick = onToggleMode) {
+                    FilledTonalButton(
+                        onClick = onToggleMode,
+                        modifier = Modifier.padding(end = 8.dp),
+                    ) {
                         Text(if (isTeacher) "Lock" else "Teacher")
                     }
                 },
@@ -120,10 +124,18 @@ private fun CategoryGrid(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                text = "Pick a category",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         items(categories, key = { it.id }) { category ->
             CategoryTile(
                 name = category.name,
                 imageRef = category.imageRef,
+                seed = category.id,
                 onClick = { onCategoryClick(category.id) },
                 onLongClick = { onCategoryLongClick(category) },
             )

@@ -1,5 +1,10 @@
 package com.wings.picexchange.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -21,7 +26,16 @@ fun PicExchangeNavHost(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Routes.HOME, modifier = modifier) {
+    // A calm fade-through with a slight scale — smooth and unobtrusive, never a jarring whoosh.
+    NavHost(
+        navController = navController,
+        startDestination = Routes.HOME,
+        modifier = modifier,
+        enterTransition = { fadeIn(tween(260)) + scaleIn(initialScale = 0.96f, animationSpec = tween(260)) },
+        exitTransition = { fadeOut(tween(200)) },
+        popEnterTransition = { fadeIn(tween(260)) + scaleIn(initialScale = 0.96f, animationSpec = tween(260)) },
+        popExitTransition = { fadeOut(tween(200)) + scaleOut(targetScale = 0.96f, animationSpec = tween(200)) },
+    ) {
         composable(Routes.HOME) {
             HomeScreen(
                 onCategoryClick = { id -> navController.navigate(Routes.library(id)) },
