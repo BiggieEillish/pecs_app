@@ -2,13 +2,19 @@ package com.wings.picexchange.ui
 
 import android.content.Intent
 import android.speech.tts.TextToSpeech
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -17,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +42,7 @@ import com.wings.picexchange.ui.components.PinDialog
 import com.wings.picexchange.ui.navigation.PicExchangeNavHost
 import com.wings.picexchange.ui.strip.SentenceStrip
 import com.wings.picexchange.ui.strip.StripViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -64,7 +72,36 @@ fun PicExchangeRoot() {
     CompositionLocalProvider(LocalAppMode provides appMode) {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            snackbarHost = { SnackbarHost(snackbarHostState) },
+            snackbarHost = {
+                SnackbarHost(snackbarHostState) { data ->
+                    // Stay for 5s, then auto-dismiss; tapping the snackbar anywhere but the
+                    // "Undo" button dismisses it immediately.
+                    LaunchedEffect(data) {
+                        delay(5_000L)
+                        data.dismiss()
+                    }
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                            ) { data.dismiss() },
+                        action = {
+                            data.visuals.actionLabel?.let { label ->
+                                TextButton(
+                                    onClick = { data.performAction() },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = SnackbarDefaults.actionColor,
+                                    ),
+                                ) { Text(label) }
+                            }
+                        },
+                    ) {
+                        Text(data.visuals.message)
+                    }
+                }
+            },
             bottomBar = {
                 Column {
                     (ttsStatus as? TtsStatus.Unavailable)?.let { TtsUnavailableBanner(it.reason) }
@@ -84,6 +121,7 @@ fun PicExchangeRoot() {
                                     val result = snackbarHostState.showSnackbar(
                                         message = "Removed “${removed.label}”",
                                         actionLabel = "Undo",
+                                        duration = SnackbarDuration.Indefinite,
                                     )
                                     if (result == SnackbarResult.ActionPerformed) {
                                         stripViewModel.insertAt(index, removed)
@@ -97,6 +135,7 @@ fun PicExchangeRoot() {
                                 val result = snackbarHostState.showSnackbar(
                                     message = "Sentence cleared",
                                     actionLabel = "Undo",
+                                    duration = SnackbarDuration.Indefinite,
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
                                     stripViewModel.restore(previous)
